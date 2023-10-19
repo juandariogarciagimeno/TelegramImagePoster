@@ -1,0 +1,28 @@
+{
+  "name": "twittertotelegram",
+  "version": "1.0.0",
+  "description": "Repost tweet likes to telegram chanel",
+  "main": "dist/app.js",
+  "scripts": {
+    "start": "tsc && node dist/app.js",
+    "lint": "eslint . --ext .ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Juanikus/twittertotelegram.git"
+  },
+  "keywords": [
+    "twitter",
+    "telegram",
+    "bit"
+  ],
+  "author": "Juanikus",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Juanikus/twittertotelegram/issues"
+  },
+  "homepage": "https://github.com/Juanikus/twittertotelegram#readme",
+  "devDependencies": {
+    "typescript": "^5.2.2"
+  }
+}
