@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Repost tweet likes to telegram chanel",
   "main": "dist/app.js",
+  "type": "module",
   "scripts": {
     "start": "tsc && node dist/app.js",
     "lint": "eslint . --ext .ts"
@@ -23,6 +24,14 @@
   },
   "homepage": "https://github.com/Juanikus/twittertotelegram#readme",
   "devDependencies": {
+    "@types/node": "^20.8.7",
     "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@the-convocation/twitter-scraper": "^0.8.1",
+    "fs": "^0.0.1-security",
+    "input": "^1.0.1",
+    "node-json-db": "^2.3.0",
+    "telegram": "^2.19.8"
   }
 }
