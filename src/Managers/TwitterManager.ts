@@ -1,5 +1,5 @@
-import { Scraper, Tweet } from '@the-convocation/twitter-scraper';
-import { TwitterImage } from './TwitterImage.js';
+import { Scraper } from '@the-convocation/twitter-scraper';
+import { Image } from '../Image.js';
 
 export class TwitterManager {
     private static UrlRegex = /http(?:s)?:\/\/(?:www\.)?(fx)?(twitter|x)\.com\/(?<user>[a-zA-Z0-9_]+)\/status\/(?<id>.*)/
@@ -11,7 +11,7 @@ export class TwitterManager {
         return result;
     }
 
-    public static async GetTweetImages (url:string): Promise<TwitterImage> {
+    public static async GetImages (url:string): Promise<Image> {
         var match = this.IdExtract.exec(url);
         var tweetid = match[1];
         tweetid = tweetid.split('?')[0];
@@ -19,6 +19,6 @@ export class TwitterManager {
 
         var imgurls = tweet.photos.map(x => x.url);
 
-        return new TwitterImage(tweet.permanentUrl ?? url, imgurls, tweet.username);
+        return new Image(tweet.permanentUrl ?? url, tweet.username, "", imgurls);
     }
 }

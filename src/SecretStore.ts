@@ -12,6 +12,8 @@ export class SecretStore {
     public TelegramPass: string;
     public TelegramSourceGroupName: string;
     public TelegramTargetGroupName: string;
+    public PixivAccessToken:string
+    public PixivRefreshToken:string;
 
     public constructor() {
         this.db = new JsonDB(new Config("secrets.json", true, true));
@@ -20,6 +22,7 @@ export class SecretStore {
     public async init() {
         var twitterConfig = await this.db.getData("/Twitter");
         var telegramConfig = await this.db.getData("/Telegram");
+        var pixivConfig = await this.db.getData("/Pixiv");
 
         this.TwitterUser = twitterConfig.User;
         this.TwitterPass = twitterConfig.Pass;
@@ -30,10 +33,17 @@ export class SecretStore {
         this.TelegramPass = telegramConfig.Pass;
         this.TelegramSourceGroupName = telegramConfig.SourceChatName;
         this.TelegramTargetGroupName = telegramConfig.TargetChatName;
+        this.PixivAccessToken = pixivConfig.AccessToken;
+        this.PixivRefreshToken = pixivConfig.RefreshToken;
     }
 
     public async SetTelegramSession (session:string) {
         await this.db.push("/Telegram/Session", session);
         this.TelegramSession = await this.db.getData("/Telegram/Session");
+    }
+
+    public async SetPixivRefreshToken (token:string) {
+        await this.db.push("/Pixiv/RefreshToken", token);
+        this.PixivRefreshToken = await this.db.getData("/Pixiv/RefreshToken");
     }
 }

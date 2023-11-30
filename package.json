@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/Juanikus/twittertotelegram#readme",
   "devDependencies": {
-    "@types/node": "^20.8.7",
+    "@types/node": "^20.10.1",
     "typescript": "^5.2.2"
   },
   "dependencies": {
@@ -32,6 +32,7 @@
     "fs": "^0.0.1-security",
     "input": "^1.0.1",
     "node-json-db": "^2.3.0",
+    "pixiv.ts": "^0.5.9",
     "telegram": "^2.19.8"
   }
 }
