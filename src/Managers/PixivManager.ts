@@ -4,7 +4,7 @@ import * as fs from 'node:fs/promises';
 
 export default class PixivManager {
 
-    private static PixivUrlRegex = /^https:\/\/www\.pixiv\.net\/en\/artworks\/(?<id>\d+)$/;
+    private static PixivUrlRegex = /https:\/\/www\.pixiv\.net(\/en)?\/artworks\/(?<id>\d+)/;
     private static client:Pixiv.default;
 
     public static async Init(data: {accesstoken:string, refreshtoken:string}) {

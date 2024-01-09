@@ -13,7 +13,9 @@ var store = new SecretStore();
 await store.init()
 
 var pixivlogindata = {accesstoken: store.PixivAccessToken, refreshtoken: store.PixivRefreshToken};
+var twitterlogindata = {username: store.TwitterUser, password:store.TwitterPass}
 await PixivManager.Init(pixivlogindata);
+await TwitterManager.Init(twitterlogindata);
 
 const stringSession = new StringSession(store.TelegramSession);
 
