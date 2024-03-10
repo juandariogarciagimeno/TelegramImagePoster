@@ -21,22 +21,46 @@ version: '3.4'
 Or downloading the repository and running the command
 > npm start
 
+**Note:**
+
+The first time the program is launched telegram will ask through the console for a verification code sent to your account.
+
 ## Configuration
 
 The providers to use, their credentials and the caption can be configured through a config.json file (which needs to be created). A `config-sample.json` file is provided with dummy data
 
+### Telegram
+Telegram configuration needs to include the *AppId* and *AppHash* for your account, which can be found through the following [link](https://my.telegram.org/), loging in with your phone number > developer tools.
+
+The *session* entry needs to be empty, once the first login is performed the session key will be stored in this field for future logins
+
+The *Pin* entry can be left empty if no pin is configured on your telegram account.
+
+### Pixiv
+In order to use pixiv provider a valid *AccessToken* and *RefreshToken* need to be provided to it's configuration. Information on how to extract this token can be found on the following [link](https://github.com/stepney141/pixiv-token-extractor)
+
+
 ## Customization
 
-The caption for each provider can be customized with a certain set of variables available for each provider. The caption can also contain markup, which will be interpreted by telegram.
+The caption can be customized with a certain set of variables available for each provider. The caption can also contain markup, which will be interpreted by telegram.
 
 In this example, for the twitter provider the caption will be a the author's name between [brackets] and bolded, and a link to the original source
 
 ```json
 {
-    "caption": "**[%author%]** [Source](%link%)"
+    "caption": "<b>[%author%]</b> <br> <a href='%url%'>Source</a>"
 }
 ```
 
-## Pixiv Token
+### Available Variables
 
-In order to use pixiv provider to it's full extent and be able to post private/age restricted images, a valid token and refresh token need to be provided to it's configuration. Information on how to extract this token can be found on the following [link](https://github.com/stepney141/pixiv-token-extractor)
+#### Twitter:
+* %url% -> The URL of the original Post.
+* %author% -> The account's name.
+* %caption% -> The text of the tween.
+
+#### Pixiv:
+* %url% -> The URL of the original Post.
+* %author% -> The account's name.
+* %caption% -> The caption of the pixiv post.
+* %tags% -> comma separated list of tags.

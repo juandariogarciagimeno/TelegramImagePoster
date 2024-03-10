@@ -11,7 +11,7 @@ export class ConfigStore {
     public TelegramConfig? : TelegramConfig
 
     public constructor() {
-        this.db = new JsonDB(new Config("config2.json", true, true));
+        this.db = new JsonDB(new Config("config.json", true, true));
     }
 
     public async init() {

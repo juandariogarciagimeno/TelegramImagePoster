@@ -1,10 +1,21 @@
 {
     "Twitter": {
-        "User": "",
-        "Pass": ""
+        "Username": "",
+        "Pasword": ""
     },
     "Telegram": {
-        "AppId": "",
-        "AppHash": ""
+        "AppId": 0,
+        "AppHash": "",
+        "Session": "",
+        "Phone": "",
+        "Pin": "",
+        "SourceChatIdOrTitle": "",
+        "TargetChatIdOrTitle": "",
+        "UseMarkup": true,
+        "CaptionTemplate": "<b>[%author%]</b> <br> <a href='%url%'>Source</a>"
+    },
+    "Pixiv": {
+        "AccessToken": "",
+        "RefreshToken": ""
     }
 }
