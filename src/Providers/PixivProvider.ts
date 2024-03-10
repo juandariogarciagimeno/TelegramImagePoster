@@ -1,26 +1,28 @@
-import { Image } from '../Image.js';
+import { Image } from '../Models/Image.js';
 import Pixiv from "pixiv.ts";
 import * as fs from 'node:fs/promises';
+import IProvider from './IProvider.js';
+import { ConfigStore } from '../ConfigStore.js';
 
-export default class PixivManager {
+export default class PixivProvider implements IProvider{
 
     private static PixivUrlRegex = /https:\/\/www\.pixiv\.net(\/en)?\/artworks\/(?<id>\d+)/;
-    private static client:Pixiv.default;
+    private client:Pixiv.default;
 
-    public static async Init(data: {accesstoken:string, refreshtoken:string}) {
+    public async Init(config :ConfigStore) {
         
-        Pixiv.default.accessToken = data.accesstoken;
-        this.client = await Pixiv.default.refreshLogin(data.refreshtoken);
+        Pixiv.default.accessToken = config.PixivConfig.AccessToken;
+        this.client = await Pixiv.default.refreshLogin(config.PixivConfig.RefreshToken);
 
-        data.refreshtoken = await this.client?.refreshToken();
+        config.SetPixivRefreshToken(await this.client?.refreshToken());
     }
 
-    public static IsPixivURL (url:string):boolean {
-        return this.PixivUrlRegex.test(url);
+    public CanHandle (url:string):boolean {
+        return PixivProvider.PixivUrlRegex.test(url);
     }
 
-    public static async GetPixivImages(url:string) : Promise<Image> {
-        var match = this.PixivUrlRegex.exec(url);
+    public async GetImages(url:string) : Promise<Image> {
+        var match = PixivProvider.PixivUrlRegex.exec(url);
         var id = match.groups["id"];
         var illustid = Number.parseInt(id);
 
@@ -41,8 +43,14 @@ export default class PixivManager {
         var imgList = await fs.readdir("./images");
         var imgbuffer = await Promise.all(imgList.map(async (x) => {var img = await fs.readFile(`./images/${x}`); await fs.unlink(`./images/${x}`); return img}));
 
-
         var iurl = image.url ?? url;
-        return new Image(iurl, image.user?.name, image.caption, null, imgbuffer);
+        var img = new Image(imgbuffer);
+
+        img.AdditionalValues.set("url", iurl);
+        img.AdditionalValues.set("author", image.user?.name);
+        img.AdditionalValues.set("caption", image.caption);
+        img.AdditionalValues.set("tags", image.tags.map(x => x.name).join(", "));
+
+        return img;
     }
 }
