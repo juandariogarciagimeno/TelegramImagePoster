@@ -8,5 +8,6 @@ export default class TelegramConfig {
     public Pin? : string;
     public UseMarkup : boolean;
     public CaptionTemplate : string;
+    public OnlyMyMessages : boolean;
 
 }

@@ -23,13 +23,18 @@ if (providers == null || providers.length == 0) {
 function CheckMessage(event: NewMessageEvent): IProvider {
     var found : IProvider = null;
 
+    var msg = event.message.text;
+    if (msg.startsWith("<a")) {
+        msg = /href=\"(?<url>.*)\"/.exec(msg).groups['url'];
+    }
+
     if (event.isGroup && !event.isChannel) {
         var sender = event.message.sender as Api.User
-        if (sender?.username == telegramManager.Me.username) {
+        if (!store.TelegramConfig.OnlyMyMessages || sender?.username == telegramManager.Me.username) {
             var chat = event.message.chat as Api.Chat
             if (chat?.id.eq(telegramManager.Source.chatId)) {
                 providers.forEach(x => {
-                    if (x.CanHandle(event.message.text)) {
+                    if (x.CanHandle(msg)) {
                         found = x;
                     }
                 })

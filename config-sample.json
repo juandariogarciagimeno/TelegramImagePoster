@@ -12,10 +12,15 @@
         "SourceChatIdOrTitle": "",
         "TargetChatIdOrTitle": "",
         "UseMarkup": true,
-        "CaptionTemplate": "<b>[%author%]</b> <br> <a href='%url%'>Source</a>"
+        "CaptionTemplate": "<b>[%author%]</b> <br> <a href='%url%'>Source</a>",
+        "OnlyMyMessages": true
     },
     "Pixiv": {
         "AccessToken": "",
         "RefreshToken": ""
-    }
+    },
+    "Booru": [
+        "danbooru.donmai.us",
+        "gelbooru.com"
+    ]
 }

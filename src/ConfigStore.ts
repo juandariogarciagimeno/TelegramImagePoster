@@ -2,6 +2,7 @@ import { JsonDB, Config } from 'node-json-db';
 import TwitterProviderConfig from './Models/TwitterProviderConfig.js';
 import PixivProviderConfig from './Models/PixivProviderConfig.js';
 import TelegramConfig from './Models/TelegramConfig.js';
+import BooruProviderConfig from './Models/BooruProviderConfig.js';
 
 export class ConfigStore {
     private db: JsonDB;
@@ -9,6 +10,7 @@ export class ConfigStore {
     public TwitterConfig? : TwitterProviderConfig
     public PixivConfig? : PixivProviderConfig
     public TelegramConfig? : TelegramConfig
+    public BooruConfig? : BooruProviderConfig
 
     public constructor() {
         this.db = new JsonDB(new Config("config.json", true, true));
@@ -19,28 +21,11 @@ export class ConfigStore {
         this.TwitterConfig = await this.db.getObjectDefault<TwitterProviderConfig>("/Twitter", null);
         this.TelegramConfig = await this.db.getObject<TelegramConfig>("/Telegram");
         this.PixivConfig = await this.db.getObjectDefault<PixivProviderConfig>("/Pixiv", null);
-
-        // var twitterConfig = await this.db.getData("/Twitter");
-        // var telegramConfig = await this.db.getData("/Telegram");
-        // var pixivConfig = await this.db.getData("/Pixiv");
-
-        // if (twitterConfig != null) {
-        //     this.TwitterConfig = new TwitterProviderConfig()
-        //     this.TwitterConfig.Username = twitterConfig.User;
-        //     this.TwitterConfig.Pasword = twitterConfig.Pass;
-        // }
-        
-        // if (pixivConfig != null) {
-        //     this.PixivConfig = new PixivProviderConfig()
-        //     this.PixivConfig.AccessToken = pixivConfig.AccessToken;
-        //     this.PixivConfig.RefreshToken = pixivConfig.RefreshToken;
-        // }
-
-        // this.TelegramConfig = new TelegramConfig()
-        // this.TelegramConfig.Phone = telegramConfig.Phone;
-        // this.TelegramConfig.Pin = telegramConfig.Pass;
-        // this.TelegramConfig.SourceChatIdOrTitle = telegramConfig.SourceChatName;
-        // this.TelegramConfig.TargetChatIdOrTitle = telegramConfig.TargetChatName;
+        var booruItems = await this.db.getObjectDefault<Array<string>>("/Booru", null);
+        if (booruItems != null && booruItems.length > 0) {
+            this.BooruConfig = new BooruProviderConfig();
+            this.BooruConfig.Items = booruItems;
+        }
     }
 
     public async SetTelegramSession (session:string) {

@@ -8,7 +8,7 @@ At the moment the following sources are supported thanks to the usage of third p
 
 * Twitter ([twitter-scrapper](https://github.com/the-convocation/twitter-scraper))
 * Pixiv ([pixiv.ts](https://github.com/Tenpi/pixiv.ts))
-* Booru ([BooruJS](https://github.com/lsTheFur/Booru))
+* Booru ([booru](https://github.com/AtoraSuunva/booru))
 
 ## Deploy
 
@@ -27,7 +27,7 @@ The first time the program is launched telegram will ask through the console for
 
 ## Configuration
 
-The providers to use, their credentials and the caption can be configured through a config.json file (which needs to be created). A `config-sample.json` file is provided with dummy data
+The providers to use, their credentials and the caption can be configured through a `config.json` file (which needs to be created). A `config-sample.json` file is provided with dummy data
 
 ### Telegram
 Telegram configuration needs to include the *AppId* and *AppHash* for your account, which can be found through the following [link](https://my.telegram.org/), loging in with your phone number > developer tools.
@@ -39,6 +39,8 @@ The *Pin* entry can be left empty if no pin is configured on your telegram accou
 ### Pixiv
 In order to use pixiv provider a valid *AccessToken* and *RefreshToken* need to be provided to it's configuration. Information on how to extract this token can be found on the following [link](https://github.com/stepney141/pixiv-token-extractor)
 
+### Booru
+The booru section in config consists on a list of booru websites that you want to process urls from. A complete list of supported sites can be found [here](https://github.com/AtoraSuunva/booru/blob/master/src/sites.json)
 
 ## Customization
 
@@ -63,4 +65,10 @@ In this example, for the twitter provider the caption will be a the author's nam
 * %url% -> The URL of the original Post.
 * %author% -> The account's name.
 * %caption% -> The caption of the pixiv post.
+* %tags% -> comma separated list of tags.
+
+#### Booru:
+* %url% -> The URL of the source (if any).
+* %posturl% -> The URL of the booru Post.
+* %author% -> The account's name.
 * %tags% -> comma separated list of tags.

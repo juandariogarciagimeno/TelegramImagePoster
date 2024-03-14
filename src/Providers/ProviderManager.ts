@@ -1,4 +1,5 @@
 import { ConfigStore } from "../ConfigStore.js";
+import BooruProvider from "./BooruProvider.js";
 import IProvider from "./IProvider.js";
 import PixivProvider from "./PixivProvider.js";
 import { TwitterProvider } from "./TwitterProvider.js";
@@ -19,6 +20,17 @@ export default class ProviderManager {
             providers.push(twitter);
         }
 
+        if (config.BooruConfig != null && config.BooruConfig.Items.length > 0) {
+            config.BooruConfig.Items.forEach(x => {
+                try {
+                    var booru = new BooruProvider();
+                    booru.Init(config, x);
+                    providers.push(booru);
+                } catch {
+                    console.log(`Error loading provider ${x}`);
+                }
+            })
+        }
         return providers;
     }
 }
