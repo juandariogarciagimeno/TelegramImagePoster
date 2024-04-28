@@ -16,9 +16,13 @@ The bot can be deployed through docker making use of the following docker-compos
 
 ```yml
 version: '3.4'
-//TODO
+services:
+  tip:
+    image: juanikus/telegramimageposter:latest
+    volumes:
+      - .\config.json:/app/config.json
 ```
-Or downloading the repository and running the command
+Or downloading the repository and running
 > npm start
 
 **Note:**
@@ -46,7 +50,7 @@ The booru section in config consists on a list of booru websites that you want t
 
 The caption can be customized with a certain set of variables available for each provider. The caption can also contain markup, which will be interpreted by telegram.
 
-In this example, for the twitter provider the caption will be a the author's name between [brackets] and bolded, and a link to the original source
+In this sample, the caption will be a the author's name between [brackets] and bolded, and a link to the original source
 
 ```json
 {
