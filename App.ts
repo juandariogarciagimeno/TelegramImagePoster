@@ -1,130 +1,65 @@
-import { SecretStore } from './src/SecretStore.js'
-import { TelegramClient } from 'telegram';
-import { StringSession } from "telegram/sessions/index.js";
+import { ConfigStore } from './src/ConfigStore.js'
 import { Api } from 'telegram/tl/index.js';
-import input from 'input';
-import { NewMessage, NewMessageEvent } from 'telegram/events/NewMessage.js';
-import { TwitterManager } from './src/Managers/TwitterManager.js';
-import { Image } from './src/Image.js';
-import PixivManager from './src/Managers/PixivManager.js';
-import { CustomFile } from 'telegram/client/uploads.js';
+import { NewMessageEvent } from 'telegram/events/NewMessage.js';
+import ProviderManager from './src/Providers/ProviderManager.js';
+import TelegramManager from './src/TelegramManager.js';
+import IProvider from './src/Providers/IProvider.js';
 
-var store = new SecretStore();
+var store = new ConfigStore();
 await store.init()
 
-var pixivlogindata = {accesstoken: store.PixivAccessToken, refreshtoken: store.PixivRefreshToken};
-await PixivManager.Init(pixivlogindata);
-
-const stringSession = new StringSession(store.TelegramSession);
-
-const client = new TelegramClient(stringSession, store.TelegramAppId, store.TelegramAppHash, {connectionRetries: 5});
-
-await client.start({
-    phoneNumber: async () => store.TelegramPhone,
-    password: async () => store.TelegramPass,
-    phoneCode: async () => await input.text("Enter telegram verification code"),
-    onError: (err) => console.log(err)
-})
-
-await store.SetPixivRefreshToken(pixivlogindata.refreshtoken);
-await store.SetTelegramSession(stringSession.save());
-
-const me = await client.getMe() as Api.User;
-const target = await GetTargetChannel();
-
-if (!target) {
-    throw "Target Channel not found!";
+var telegramManager = new TelegramManager();
+if (!await telegramManager.Init(store)) {
+    throw new Error("Couldn't open Telegram Session. Please check console output in case it's asking for account verification");
 }
 
-async function GetTargetChannel(): Promise<Api.TypeInputPeer> {
-    try {
-        var target: Api.TypeInputPeer = null;
+var providers = await ProviderManager.GetProviders(store);
 
-        const dialogs = (await client.getDialogs()).filter(d => d.isChannel && !d.isGroup);
-        var i = 0;
-        do {
-            if (dialogs[i].title == store.TelegramTargetGroupName)  {
-                target = dialogs[i].inputEntity;
-            }
-            i++;
-        } while(target == null && i <= dialogs.length);
-    
-        return target;
+if (providers == null || providers.length == 0) {
+    throw new Error("No providers configured");
+}
+
+
+function CheckMessage(event: NewMessageEvent): IProvider {
+    var found : IProvider = null;
+
+    var msg = event.message.text;
+    if (msg.startsWith("<a")) {
+        msg = /href=\"(?<url>.*)\"/.exec(msg).groups['url'];
     }
-    catch {return null;}
-}
 
-function CheckMessage(event: NewMessageEvent): Number {
     if (event.isGroup && !event.isChannel) {
         var sender = event.message.sender as Api.User
-        if (sender?.username == me.username) {
+        if (!store.TelegramConfig.OnlyMyMessages || sender?.username == telegramManager.Me.username) {
             var chat = event.message.chat as Api.Chat
-            if (chat?.title == store.TelegramSourceGroupName) {
-                return TwitterManager.IsTwitterURL(event.message.text) ? 1 : PixivManager.IsPixivURL(event.message.text) ? 2 : 0;
+            if (chat?.id.eq(telegramManager.Source.chatId)) {
+                providers.forEach(x => {
+                    if (x.CanHandle(msg)) {
+                        found = x;
+                    }
+                })
             }
         }
     }
 
-    return 0;
+    return found;
 }
 
 async function HandleNewMessage(event: NewMessageEvent) {
     try {
-        var msgtype = CheckMessage(event);
-        if (msgtype == 0) return;
+        var foundProvider = CheckMessage(event);
+        if (foundProvider == null) return;
 
         var url = event.message.text;
-        var image = msgtype == 1 ? (await TwitterManager.GetImages(url)) : (await PixivManager.GetPixivImages(url));
-        if (await SendImage(image)) {
-            await client.deleteMessages(event.chat, [event.message.id], {});
+        
+        var image = await foundProvider.GetImages(url);
+
+        if (await telegramManager.SendImage(image)) {
+            await telegramManager.Client.deleteMessages(event.chat, [event.message.id], {});
         }
     } catch (e) {
-        await client.sendMessage(event.message.chat, {message: `Error Handling message: ${e}`});
+        await telegramManager.Client.sendMessage(event.message.chat, {message: `Error Handling message: ${e}`});
     }
 }
 
-async function SendImage(image:Image): Promise<boolean> {
-    
-    client.setParseMode("html");
-    var [text, entities] = client.parseMode.parse(`<b>[${image.Author}]</b> <br> <a href='${image.Url}'>Source</a>`);
-    
-    var multiImages: Api.TypeInputMedia[] = [];
-    if (image.ImageUrls != null && image.ImageUrls.length > 0) {
-        multiImages = image.ImageUrls.map(x => new Api.InputMediaPhotoExternal({url: x, spoiler: false}));
-    }
-    else if (image.Images != null && image.Images.length > 0) {
-        multiImages = await Promise.all(image.Images.map(async x => {
-            var uploaded = await client.uploadFile({
-                file: new CustomFile(
-                    "up.jpg",
-                    x.length,
-                    "",
-                    x
-                ),
-                workers: 1
-            });
-
-            return new Api.InputMediaUploadedPhoto({file: uploaded});
-        }));
-    }
-    else {
-        return;
-    }
-
-    await multiImages.forEach(async i => {
-        await client.invoke(new Api.messages.SendMedia({
-            peer: target,
-            media: i,
-            message: text,
-            entities: entities
-        }));
-    });
-
-    return true;
-}
-
-client.addEventHandler(HandleNewMessage, new NewMessage({}))
-
-
-
-//await client.sendMessage("Ecchi Lounge", {message: "Esta es una prueba de mensaje enviado por un bot"});
+telegramManager.AddListener(HandleNewMessage);

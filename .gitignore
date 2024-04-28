@@ -131,6 +131,7 @@ dist
 .pnp.*
 
 #secret store file
-secrets.json
+config.json
+config2.json
 
-./images
+./images/

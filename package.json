@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@the-convocation/twitter-scraper": "^0.8.1",
+    "booru": "^2.6.4",
     "fs": "^0.0.1-security",
     "input": "^1.0.1",
     "node-json-db": "^2.3.0",
