@@ -1,0 +1,6 @@
+version: '3.4'
+services:
+  tip:
+    image: juanikus/telegramimageposter:latest
+    volumes:
+      - .\config.json:/app/config.json
