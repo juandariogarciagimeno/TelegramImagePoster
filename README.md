@@ -2,6 +2,11 @@
 
 This is a Telegram bot that reads image links of various sources from a source chat and processes it to send the image and a custom-formatted caption to another (or the same) telegram chat/group.
 
+[<img src="https://img.shields.io/badge/license-MIT-blue">]()
+[<img src="https://img.shields.io/badge/version-2.0.0-blue">]()
+[<img src="https://img.shields.io/badge/language-Node.js%20TypeScript-green?logo=typescript">]()
+[<img src="https://img.shields.io/badge/platform-Telegram-blue?logo=telegram">]()
+
 ## Supported Sources
 
 At the moment the following sources are supported thanks to the usage of third part libraries:
